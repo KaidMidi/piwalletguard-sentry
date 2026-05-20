@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PiWalletGuard - Community Security Portal</title>
-    <!-- PI SDK OFFICIAL SCRIPT LINK (Active when inside Pi Browser/Sandbox) -->
+    <!-- PI SDK OFFICIAL SCRIPT LINK (PRODUCTION COMPLIANT) -->
     <script src="https://minepi.com"></script>
     <style>
         @import url('https://googleapis.com');
         
         /* EMBEDDED DESIGN SYSTEM CORE */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: #f3f4f6; min-height: screen; color: #1f2937; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+        body { background-color: #f3f4f6; min-height: 100vh; color: #1f2937; padding: 16px; display: flex; flex-direction: column; align-items: center; }
         
-        .main-container { max-w: 1150px; width: 100%; margin: 0 auto; bg-color: #ffffff; background: #ffffff; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden; display: flex; flex-direction: column; border: 1px solid #e5e7eb; }
+        .main-container { max-w: 1150px; width: 100%; margin: 0 auto; background: #ffffff; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden; display: flex; flex-direction: column; border: 1px solid #e5e7eb; }
         .pi-purple-gradient { background: linear-gradient(135deg, #5c2a7a 0%, #3b1754 100%); color: #ffffff; border-bottom: 4px solid #ffb300; padding: 15px 24px; }
         
-        /* FAKE BROWSER BAR BAR */
+        /* FAKE BROWSER BAR */
         .fake-url-bar { background-color: rgba(59, 23, 84, 0.8); padding: 8px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(92, 42, 122, 0.5); font-size: 12px; color: #e9d5ff; }
         .dots { display: flex; gap: 6px; }
         .dot { width: 10px; height: 10px; border-radius: 50%; }
@@ -50,7 +50,7 @@
         .dropzone { border: 2px dashed #d1d5db; border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; background: #ffffff; }
         .dropzone:hover { border-color: #5c2a7a; }
         
-        .submit-locked { w-full; background-color: #d1d5db; color: #6b7280; font-weight: bold; padding: 12px; border-radius: 8px; cursor: not-allowed; text-align: center; border: none; width: 100%; margin-top: 10px; }
+        .submit-locked { background-color: #d1d5db; color: #6b7280; font-weight: bold; padding: 12px; border-radius: 8px; cursor: not-allowed; text-align: center; border: none; width: 100%; margin-top: 10px; }
         .submit-active { width: 100%; background-color: #ffb300; color: #2d1340; font-weight: bold; padding: 12px; border-radius: 8px; cursor: pointer; border: none; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
         /* REGISTRY DASHBOARD CARDS */
@@ -180,7 +180,7 @@
         </main>
     </div>
 
-    <!-- CODE SCRIPT LOGIC LAYER -->
+    <!-- CODE SCRIPT LOGIC LAYER (PRODUCTION COMPLIANT) -->
     <script>
         const translations = {
             en: {
@@ -214,11 +214,12 @@
             loadMockData();
             renderRegistry();
             
+            // PRODUCTION INITIALIZATION FOR PI NETWORK APP STUDIO
             try {
-                Pi.init({ version: "2.0", sandbox: true });
-                setTimeout(async () => { await attemptPiAuth(); }, 500);
+                Pi.init({ version: "2.0", sandbox: false });
+                setTimeout(async () => { await attemptPiAuth(); }, 800);
             } catch (err) {
-                console.log("Local standalone file mode active.");
+                console.log("Local standalone file mode context active.");
             }
         });
 
@@ -260,7 +261,9 @@
 
         async function attemptPiAuth() {
             try {
-                const auth = await Pi.authenticate(['username'], function(p){});
+                // EXPLICIT SIGN-IN SCOPES REQUIRED BY THE APP STUDIO VERIFIER
+                const scopes = ['username'];
+                const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
                 currentUser = auth.user.username;
                 
                 document.getElementById('userStatusHeader').innerHTML = `
@@ -271,11 +274,18 @@
                 document.getElementById('piUsername').value = '@' + currentUser;
                 updateSubmitButtonState();
             } catch (error) {
-                // FALLBACK FOR LOCAL OFFICE OPENING (Allows testing submit without crash)
-                currentUser = "TestPioneer";
-                document.getElementById('piUsername').value = '@' + currentUser;
-                updateSubmitButtonState();
+                console.error("Pi Authentication failed or context was bypass-interrupted.", error);
+                if (window.location.hostname === "localhost" || window.location.protocol === "file:") {
+                    currentUser = "TestPioneer";
+                    document.getElementById('piUsername').value = '@' + currentUser;
+                    updateSubmitButtonState();
+                }
             }
+        }
+
+        // STRICT MANDATORY CALLBACK STRUCTURE FOR PI APP COMPLIANCE
+        function onIncompletePaymentFound(payment) {
+            console.log("No pending or incomplete payments logged:", payment);
         }
 
         function updateSubmitButtonState() {

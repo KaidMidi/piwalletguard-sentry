@@ -19,7 +19,7 @@
         }
 
         body { 
-            background-color: #0f111a; /* Fond sombre premium inspiré de votre logo */
+            background-color: #f3f4f6; 
             min-height: 100vh; 
             color: #1f2937; 
             display: flex; 
@@ -29,76 +29,47 @@
             padding: 8px;
         }
         
-        /* DYNAMIC SPLASH SCREEN WITH YOUR LOGO */
-        .splash-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #1a1528 0%, #0a0813 100%);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.5s ease-out;
-        }
-        
-        .splash-logo-container {
-            text-align: center;
-            animation: pulseLogo 2s infinite ease-in-out;
-        }
-        
-        @keyframes pulseLogo {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(92, 42, 122, 0.4)); }
-            50% { transform: scale(1.03); filter: drop-shadow(0 0 30px rgba(255, 179, 0, 0.6)); }
-        }
-
-        /* CUSTOM SVG BRAND EMBED (EXACT REPLICA OF YOUR IMAGE SHIELD & PI SYMBOL) */
-        .brand-shield-svg {
-            width: 130px;
-            height: 130px;
-            margin-bottom: 20px;
-        }
-        
         .main-container { 
             width: 100%; 
             max-width: 1150px;
             margin: 0 auto; 
             background: #ffffff; 
-            border-radius: 20px; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+            border-radius: 16px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
             overflow: hidden; 
             display: flex; 
             flex-direction: column; 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            opacity: 0; /* Apparaît doucement après le Splash Screen */
-            transform: translateY(10px);
-            transition: all 0.6s ease-out;
+            border: 1px solid #e5e7eb; 
         }
         
-        .pi-purple-gradient { 
-            background: linear-gradient(135deg, #2d1340 0%, #170724 100%); 
-            color: #ffffff; 
-            border-bottom: 4px solid #ffb300; 
-            padding: 14px 20px; 
-        }
+        .pi-purple-gradient { background: linear-gradient(135deg, #5c2a7a 0%, #3b1754 100%); color: #ffffff; border-bottom: 4px solid #ffb300; padding: 12px 16px; }
         
         /* FAKE BROWSER BAR */
-        .fake-url-bar { background-color: rgba(23, 7, 36, 0.8); padding: 6px 12px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(92, 42, 122, 0.3); font-size: 11px; color: #e9d5ff; }
+        .fake-url-bar { background-color: rgba(59, 23, 84, 0.8); padding: 6px 12px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(92, 42, 122, 0.5); font-size: 11px; color: #e9d5ff; }
         .dots { display: flex; gap: 4px; }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
-        .url-field { background-color: rgba(15, 5, 24, 0.95); padding: 4px 12px; border-radius: 9999px; flex: 1; max-width: 100%; font-family: monospace; color: #ffb300; text-align: center; font-size: 11px; border: 1px solid rgba(255,179,0,0.2); }
+        .url-field { background-color: rgba(45, 19, 64, 0.95); padding: 4px 12px; border-radius: 9999px; flex: 1; max-width: 100%; font-family: monospace; color: #f3e8ff; text-align: center; font-size: 11px; }
         
         /* BRANDING & HEADER */
-        .header-main { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
-        .brand-zone { display: flex; align-items: center; gap: 12px; }
-        .logo-box-mini { width: 42px; height: 42px; }
+        .header-main { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .brand-zone { display: flex; align-items: center; gap: 10px; }
         
-        .pi-gold-btn { background-color: #ffb300; color: #2d1340; font-weight: 800; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; box-shadow: 0 4px 14px rgba(255, 179, 0, 0.3); width: 100%; text-align: center; display: block; text-transform: uppercase; transition: all 0.2s ease; }
-        .pi-gold-btn:hover { background-color: #f9a825; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255, 179, 0, 0.5); }
-        .lang-dropdown { background-color: #2d1340; border: 1px solid #ffb300; color: #ffffff; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; }
+        /* APP BRAND LOGO HEADER INTEGRATION */
+        .app-logo-header { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #ffb300; box-shadow: 0 2px 4px rgba(0,0,0,0.2); object-fit: cover; }
         
-        /* LAYOUT DISTRIBUTION */
-        .main-layout { display: flex; flex-direction: column; gap: 16px; padding: 12px; background-color: #ffffff; width: 100%; }
+        .pi-gold-btn { background-color: #ffb300; color: #2d1340; font-weight: bold; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%; text-align: center; display: block; text-transform: uppercase; }
+        .pi-gold-btn:hover { background-color: #f9a825; }
+        .lang-dropdown { background-color: #4d1f67; border: 1px solid #7c3f9e; color: #ffffff; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; }
+        
+        /* LAYOUT MAIN */
+        .main-layout { 
+            display: flex;
+            flex-direction: column;
+            gap: 16px; 
+            padding: 12px; 
+            background-color: #ffffff; 
+            width: 100%;
+        }
         
         @media (min-width: 1024px) {
             body { padding: 16px; }
@@ -106,6 +77,10 @@
             .left-panel { grid-column: span 5; }
             .right-panel { grid-column: span 7; }
         }
+        
+        /* BRAND WELCOME DISPLAY CARD */
+        .brand-banner-card { background: linear-gradient(135deg, #2d1340 0%, #170724 100%); border-radius: 16px; padding: 20px; color: white; text-align: center; border: 1px solid #5c2a7a; box-shadow: inset 0 0 20px rgba(92, 42, 122, 0.4); margin-bottom: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+        .brand-banner-logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #ffb300; box-shadow: 0 10px 25px rgba(0,0,0,0.5); object-fit: cover; }
         
         /* COMPONENTS STYLING */
         .form-card { background-color: #f9fafb; border-radius: 16px; padding: 14px; border: 1px solid #f3f4f6; width: 100%; }
@@ -122,7 +97,7 @@
         .submit-locked { background-color: #d1d5db; color: #6b7280; font-weight: bold; padding: 12px; border-radius: 8px; cursor: not-allowed; text-align: center; border: none; width: 100%; margin-top: 6px; }
         .submit-active { width: 100%; background-color: #ffb300; color: #2d1340; font-weight: bold; padding: 12px; border-radius: 8px; cursor: pointer; border: none; margin-top: 6px; }
         
-        /* REGISTRY CARDS */
+        /* REGISTRY DASHBOARD CARDS */
         .dashboard-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; margin-bottom: 14px; width: 100%; }
         .badge-count { background-color: #fef2f2; color: #991b1b; padding: 2px 8px; border-radius: 9999px; font-weight: bold; font-size: 10px; border: 1px solid #fee2e2; }
         .scam-card { background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; font-size: 12px; width: 100%; }
@@ -132,7 +107,9 @@
         .badge-amount { background-color: #fef2f2; color: #b91c1c; font-weight: 800; padding: 2px 6px; border-radius: 4px; border: 1px solid #fca5a5; display: inline-block; }
         .vote-section { background: #ffffff; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb; display: flex; flex-direction: column; gap: 8px; }
         
-        @media(min-width: 400px) { .vote-section { flex-direction: row; justify-content: space-between; align-items: center; } }
+        @media(min-width: 400px) {
+            .vote-section { flex-direction: row; justify-content: space-between; align-items: center; }
+        }
         
         .progress-bar-bg { width: 100%; background-color: #e5e7eb; height: 6px; border-radius: 9999px; overflow: hidden; margin-top: 4px; }
         .progress-bar-fill { height: 100%; background-color: #ef4444; transition: width 0.3s; }
@@ -146,24 +123,7 @@
 </head>
 <body>
 
-    <!-- VISUAL IDENTITY ANIMATED SPLASH SCREEN (REPLICATING YOUR IMAGE) -->
-    <div id="splashScreen" class="splash-screen">
-        <div class="splash-logo-container">
-            <!-- Vector Shield Emblem Match -->
-            <svg class="brand-shield-svg" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="#4a157d"/>
-                <circle cx="50" cy="50" r="41" fill="#2d0f54" stroke="#ffb300" stroke-width="2"/>
-                <path d="M50,22 C65,22 72,27 72,27 C72,55 50,78 50,78 C50,78 28,55 28,27 C28,27 35,22 50,22 Z" fill="#5c1d99" stroke="#ffb300" stroke-width="3"/>
-                <path d="M50,25 C62,25 68,29 68,29 C68,52 50,73 50,73 C50,73 32,52 32,29 C32,29 38,25 50,25 Z" fill="#3b1266"/>
-                <text x="50" y="59" font-family="'Plus Jakarta Sans', sans-serif" font-size="34" font-weight="400" fill="#ffffff" text-anchor="middle">π</text>
-            </svg>
-            <h2 style="color: #ffffff; font-size: 26px; font-weight: 800; tracking-spacing: 0.5px; margin-top: 10px;">Pi Wallet Guard</h2>
-            <div style="margin-top: 15px; color: #ffb300; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;">Loading Secure Firewall...</div>
-        </div>
-    </div>
-
-    <!-- MAIN PLATFORM INTERFACE -->
-    <div id="mainContent" class="main-container">
+    <div class="main-container">
         
         <!-- HEADER INTERFACE -->
         <header class="pi-purple-gradient">
@@ -178,15 +138,11 @@
             
             <div class="header-main">
                 <div class="brand-zone">
-                    <!-- Vector Icon Miniature Fit -->
-                    <svg class="logo-box-mini" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="48" fill="#2d0f54" stroke="#ffb300" stroke-width="4"/>
-                        <path d="M50,22 C65,22 72,27 72,27 C72,55 50,78 50,78 C50,78 28,55 28,27 C28,27 35,22 50,22 Z" fill="#5c1d99" stroke="#ffb300" stroke-width="4"/>
-                        <text x="50" y="59" font-size="32" fill="#ffffff" text-anchor="middle" font-weight="bold">π</text>
-                    </svg>
+                    <!-- FIXED LOGO HEADER -->
+                    <img src="https://ibb.co" class="app-logo-header" alt="PiWalletGuard" onerror="this.style.display='none'">
                     <div>
-                        <h1 style="font-size: 18px; font-weight: 800; letter-spacing: -0.3px;">PiWalletGuard</h1>
-                        <p style="font-size: 10px; color: #ffb300; font-weight: 600;" id="t-tagline">Community Security Dashboard</p>
+                        <h1 style="font-size: 18px; font-weight: 800;">PiWalletGuard</h1>
+                        <p style="font-size: 10px; color: #d8b4fe;" id="t-tagline">Community Security Dashboard</p>
                     </div>
                 </div>
                 <div>
@@ -198,8 +154,16 @@
         <!-- MAIN LAYOUT -->
         <main class="main-layout">
             
-            <!-- LEFT COLUMN: INPUT SYSTEM -->
+            <!-- LEFT COLUMN: SIGN-UP FORM -->
             <section class="left-panel">
+                
+                <!-- VISUAL BRAND BANNER FOR APP COMPLIANCE -->
+                <div class="brand-banner-card">
+                    <img src="https://ibb.co" class="brand-banner-logo" alt="Logo Pi Wallet Guard">
+                    <h2 style="font-size: 16px; font-weight: 700; letter-spacing: 0.5px;">Pi Wallet Guard Sentry</h2>
+                </div>
+
+                <!-- AUTHENTICATION ZONE -->
                 <div id="pwa-auth-zone" class="auth-container-box">
                     <p style="font-size: 12px; font-weight: 600; color: #b45309; margin-bottom: 8px;" id="t-auth-required">Pi Network Session Required</p>
                     <button id="manualConnectBtn" onclick="attemptPiAuth()" class="pi-gold-btn">
@@ -209,7 +173,7 @@
 
                 <div class="form-card">
                     <div class="form-title">
-                        <span style="color: #ffb300;">🛡️</span> <span id="t-formTitle">Report Malicious Wallet</span>
+                        <span>⚠️</span> <span id="t-formTitle">Report Malicious Wallet</span>
                     </div>
                     
                     <form id="reportForm" onsubmit="handleFormSubmit(event)">
@@ -266,7 +230,7 @@
                 </div>
             </section>
 
-            <!-- RIGHT COLUMN: MONITORING MONITOR -->
+            <!-- RIGHT COLUMN: MONITORING REGISTRY -->
             <section class="right-panel">
                 <div class="dashboard-header">
                     <h3 style="font-weight: 700; color: #374151;" id="t-dashboardTitle">Live Malicious Registry</h3>
@@ -313,20 +277,10 @@
             loadMockData();
             renderRegistry();
             
-            // TIMEOUT TO SMOOTHLY TRANSITION FROM SPLASH TO CONTAINER
-            setTimeout(() => {
-                const splash = document.getElementById('splashScreen');
-                const main = document.getElementById('mainContent');
-                splash.style.opacity = '0';
-                main.style.opacity = '1';
-                main.style.transform = 'translateY(0)';
-                setTimeout(() => splash.style.display = 'none', 500);
-            }, 1800);
-
             try {
                 Pi.init({ version: "2.0", sandbox: false });
             } catch (err) {
-                console.log("Local initialization layout context checked.");
+                console.log("Local execution sandbox bypass.");
             }
         });
 
@@ -377,18 +331,18 @@
                 
                 document.getElementById('pwa-auth-zone').innerHTML = `
                     <div style="background-color: #ecfdf5; border: 1px solid #10b981; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; color: #065f46; text-align: center;">
-                        ✅ Connected Security Node: @${currentUser}
+                        ✅ Connected: @${currentUser}
                     </div>`;
                 
                 document.getElementById('piUsername').value = '@' + currentUser;
                 updateSubmitButtonState();
             } catch (error) {
-                console.error("Pi Core auth bypass context handled:", error);
+                console.error("Pi Auth Failed:", error);
                 if (!window.location.hostname.includes("minepi.com")) {
                     currentUser = "TestPioneer";
                     document.getElementById('pwa-auth-zone').innerHTML = `
                         <div style="background-color: #ecfdf5; border: 1px solid #10b981; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; color: #065f46; text-align: center;">
-                            ✅ Dev Standalone Connected: @${currentUser}
+                            ✅ Active Emulator Session: @${currentUser}
                         </div>`;
                     document.getElementById('piUsername').value = '@' + currentUser;
                     updateSubmitButtonState();
@@ -489,4 +443,34 @@
                     </div>
                     <div class="vote-section">
                         <div style="flex: 1; width: 100%; margin-bottom: 6px;">
-                            <div style="display: flex; justify-content: space-between; font-size: 10px
+                            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #6b7280; font-weight: 600;">
+                                <span>Scam (${item.upvotes})</span>
+                                <span>Safe (${item.downvotes})</span>
+                            </div>
+                            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${pct}%"></div></div>
+                        </div>
+                        <div class="vote-btn-group">
+                            <button onclick="handleVote('${item.address}', 'up')" class="v-btn v-scam">👍 ${dict.scamConfirm}</button>
+                            <button onclick="handleVote('${item.address}', 'down')" class="v-btn v-safe">👎 ${dict.safeReport}</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function loadMockData() {
+            const localData = localStorage.getItem('pi_wallet_reports');
+            if(localData) {
+                reports = JSON.parse(localData);
+            } else {
+                reports = [
+                    { address: "GA5W3XYZ477JKLMN654OPQRS321TUVWX789XYZ1234567890ABCDEFGH", recurrence: 3, totalStolen: 1540, upvotes: 14, downvotes: 1 },
+                    { address: "GD777777777777777777777777777777777777777777777777777777", recurrence: 1, totalStolen: 45, upvotes: 2, downvotes: 8 }
+                ];
+                localStorage.setItem('pi_wallet_reports', JSON.stringify(reports));
+            }
+        }
+    </script>
+</body>
+</html>

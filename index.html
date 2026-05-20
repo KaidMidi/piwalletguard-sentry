@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PiWalletGuard - Community Security Portal</title>
+    <!-- PI SDK OFFICIAL SCRIPT LINK (Active when inside Pi Browser/Sandbox) -->
+    <script src="https://minepi.com"></script>
+    <style>
+        @import url('https://googleapis.com');
+        
+        /* EMBEDDED DESIGN SYSTEM CORE */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #f3f4f6; min-height: screen; color: #1f2937; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+        
+        .main-container { max-w: 1150px; width: 100%; margin: 0 auto; bg-color: #ffffff; background: #ffffff; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden; display: flex; flex-direction: column; border: 1px solid #e5e7eb; }
+        .pi-purple-gradient { background: linear-gradient(135deg, #5c2a7a 0%, #3b1754 100%); color: #ffffff; border-bottom: 4px solid #ffb300; padding: 15px 24px; }
+        
+        /* FAKE BROWSER BAR BAR */
+        .fake-url-bar { background-color: rgba(59, 23, 84, 0.8); padding: 8px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(92, 42, 122, 0.5); font-size: 12px; color: #e9d5ff; }
+        .dots { display: flex; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .url-field { background-color: rgba(45, 19, 64, 0.95); padding: 6px 14px; border-radius: 9999px; flex: 1; max-width: 500px; margin: 0 auto; border: 1px solid #5c2a7a; font-family: monospace; color: #f3e8ff; text-align: center; }
+        
+        /* BRANDING & HEADER GRID */
+        .header-main { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 12px; }
+        .brand-zone { display: flex; align-items: center; gap: 12px; }
+        .logo-box { background: linear-gradient(to bottom right, #ffb300, #f9a825); color: #2d1340; padding: 10px; border-radius: 12px; font-weight: bold; font-size: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+        .pi-gold-btn { background-color: #ffb300; color: #2d1340; font-weight: bold; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 12px; transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .pi-gold-btn:hover { background-color: #f9a825; transform: translateY(-1px); }
+        .lang-dropdown { background-color: #4d1f67; border: 1px solid #7c3f9e; color: #ffffff; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; outline: none; }
+        
+        /* LAYOUT SPACES */
+        .main-layout { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; padding: 24px; background-color: #ffffff; min-height: 600px; }
+        @media (max-width: 1024px) { .main-layout { grid-template-columns: 1fr; } .left-panel, .right-panel { grid-column: span 12 !important; } }
+        .left-panel { grid-column: span 5; }
+        .right-panel { grid-column: span 7; }
+        
+        /* COMPONENTS STYLING */
+        .form-card { background-color: #f9fafb; border-radius: 16px; padding: 20px; border: 1px solid #f3f4f6; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .form-title { font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 8px; }
+        
+        .form-group { margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
+        .form-group label { font-weight: 600; color: #4b5563; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; font-size: 12px; background-color: #ffffff; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #5c2a7a; box-shadow: 0 0 0 2px rgba(92, 42, 122, 0.2); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        
+        .input-readonly { background-color: #e5e7eb !important; color: #6b7280; cursor: not-allowed; }
+        .dropzone { border: 2px dashed #d1d5db; border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; background: #ffffff; }
+        .dropzone:hover { border-color: #5c2a7a; }
+        
+        .submit-locked { w-full; background-color: #d1d5db; color: #6b7280; font-weight: bold; padding: 12px; border-radius: 8px; cursor: not-allowed; text-align: center; border: none; width: 100%; margin-top: 10px; }
+        .submit-active { width: 100%; background-color: #ffb300; color: #2d1340; font-weight: bold; padding: 12px; border-radius: 8px; cursor: pointer; border: none; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        /* REGISTRY DASHBOARD CARDS */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; margin-bottom: 16px; }
+        .badge-count { background-color: #fef2f2; color: #991b1b; padding: 2px 8px; border-radius: 9999px; font-weight: bold; font-size: 10px; border: 1px solid #fee2e2; }
+        .scam-card { background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; font-size: 12px; }
+        .wallet-box { font-family: monospace; font-weight: bold; background: #ffffff; padding: 6px; border-radius: 6px; border: 1px solid #e5e7eb; word-break: break-all; }
+        
+        .badge-recurrence { background-color: #f97316; color: #ffffff; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; }
+        .badge-amount { background-color: #fef2f2; color: #b91c1c; font-weight: 800; padding: 2px 8px; border-radius: 4px; border: 1px solid #fca5a5; }
+        .vote-section { background: #ffffff; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .progress-bar-bg { width: 100%; background-color: #e5e7eb; height: 6px; border-radius: 9999px; overflow: hidden; margin-top: 4px; }
+        .progress-bar-fill { height: 100%; background-color: #ef4444; transition: width 0.3s; }
+        .vote-btn-group { display: flex; gap: 6px; }
+        .v-btn { padding: 4px 8px; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; border: 1px solid; }
+        .v-scam { background-color: #fef2f2; border-color: #fca5a5; color: #991b1b; }
+        .v-safe { background-color: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <!-- HEADER INTERFACE -->
+        <header class="pi-purple-gradient">
+            <div class="fake-url-bar">
+                <div class="dots">
+                    <div class="dot" style="background-color: #ef4444;"></div>
+                    <div class="dot" style="background-color: #eab308;"></div>
+                    <div class="dot" style="background-color: #22c55e;"></div>
+                </div>
+                <div class="url-field">pi://walletguard.pi</div>
+            </div>
+            
+            <div class="header-main">
+                <div class="brand-zone">
+                    <div class="logo-box">🛡️</div>
+                    <div>
+                        <h1 style="font-size: 20px; font-weight: 800;">PiWalletGuard</h1>
+                        <p style="font-size: 11px; color: #d8b4fe;" id="t-tagline">Community Security Dashboard</p>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <select id="langSelect" onchange="setLanguage(this.value)" class="lang-dropdown"></select>
+                    <div id="userStatusHeader">
+                        <button id="manualConnectBtn" onclick="attemptPiAuth()" class="pi-gold-btn">
+                            <span id="t-connect">Connect Pi Wallet</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT -->
+        <main class="main-layout">
+            
+            <!-- LEFT COLUMN: SIGN-UP FORM -->
+            <section class="left-panel">
+                <div class="form-card">
+                    <div class="form-title">
+                        <span>⚠️</span> <span id="t-formTitle">Report Malicious Wallet</span>
+                    </div>
+                    
+                    <form id="reportForm" onsubmit="handleFormSubmit(event)">
+                        <div class="form-group">
+                            <label id="t-walletAddress">Malicious Pi Wallet Address</label>
+                            <input type="text" id="walletAddress" required oninput="handleWalletAddressInput(this)" />
+                        </div>
+                        
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label id="t-piUsername">Your Pi Username</label>
+                                <input type="text" id="piUsername" required readonly class="input-readonly" />
+                            </div>
+                            <div class="form-group">
+                                <label id="t-email">Email Address</label>
+                                <input type="email" id="email" required />
+                            </div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label id="t-threatLevel">Threat Level</label>
+                                <select id="threatLevel">
+                                    <option value="Phishing" id="opt-phishing">Phishing / Fake Site</option>
+                                    <option value="Passphrase" id="opt-passphrase">Passphrase Theft</option>
+                                    <option value="P2P" id="opt-p2p">P2P Scam</option>
+                                    <option value="Other" id="opt-other">Other Threat</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label id="t-amountStolen">Amount of PI Stolen</label>
+                                <input type="number" id="amountStolen" step="any" min="0.00001" required />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label id="t-description">Description</label>
+                            <textarea id="description" rows="3" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label id="t-proofs">Upload Evidence (Max 5)</label>
+                            <div class="dropzone" onclick="document.getElementById('fileInput').click()">
+                                <p id="t-dragText" style="font-size: 11px; color: #6b7280;">Click to upload images</p>
+                                <input type="file" id="fileInput" multiple accept="image/*" style="display: none;" onchange="handleFiles(this.files)" />
+                            </div>
+                            <div id="previewContainer" style="display: flex; gap: 6px; margin-top: 8px;"></div>
+                        </div>
+
+                        <button type="submit" id="submitBtn" disabled class="submit-locked">
+                            <span id="t-submitText">Connect Pi Wallet First</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- RIGHT COLUMN: MONITORING REGISTRY -->
+            <section class="right-panel">
+                <div class="dashboard-header">
+                    <h3 style="font-weight: 700; color: #374151;" id="t-dashboardTitle">Live Malicious Registry</h3>
+                    <span class="badge-count" id="totalReportsBadge">0 Items</span>
+                </div>
+                <div id="registryContainer"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- CODE SCRIPT LOGIC LAYER -->
+    <script>
+        const translations = {
+            en: {
+                tagline: "Community Security Dashboard", connect: "Connect Pi Wallet", formTitle: "Report Malicious Wallet",
+                walletAddress: "Malicious Pi Wallet Address", piUsername: "Your Pi Username", email: "Email Address",
+                threatLevel: "Threat Level", optPhishing: "Phishing / Fake Site", optPassphrase: "Passphrase Theft",
+                optP2P: "P2P Scam", optOther: "Other Threat", amountStolen: "Amount of PI Stolen",
+                description: "Reason / Description", proofs: "Upload Evidence (Max 5)", dragText: "Click to upload images",
+                submitText: "Submit Report", dashboardTitle: "Live Malicious Registry", submitDisabled: "Connect Pi Wallet First",
+                scamConfirm: "Confirm Scam", safeReport: "False Pos", reported: "Reported", times: "times"
+            },
+            fr: {
+                tagline: "Tableau de Sécurité Communautaire", connect: "Connexion Pi Wallet", formTitle: "Signaler un Portefeuille Malveillant",
+                walletAddress: "Adresse du Wallet Pi Incriminé", piUsername: "Votre Pseudo Pi Network", email: "Adresse Email",
+                threatLevel: "Niveau de Menace", optPhishing: "Phishing / Faux Site", optPassphrase: "Vol de Passphrase",
+                optP2P: "Arnaque P2P", optOther: "Autre Menace", amountStolen: "Montant PI Volé",
+                description: "Description / Raison", proofs: "Section Preuves (Max 5)", dragText: "Cliquez pour ajouter des images",
+                submitText: "Soumettre le Signalement", dashboardTitle: "Registre Actif des Menaces", submitDisabled: "Connectez votre Pi Wallet",
+                scamConfirm: "Arnaque Confirmée", safeReport: "Faux Positif", reported: "Signalé", times: "fois"
+            }
+        };
+
+        let currentLang = 'en';
+        let currentUser = null;
+        let reports = [];
+        let uploadedImages = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initLanguageSelector();
+            setLanguage('en');
+            loadMockData();
+            renderRegistry();
+            
+            try {
+                Pi.init({ version: "2.0", sandbox: true });
+                setTimeout(async () => { await attemptPiAuth(); }, 500);
+            } catch (err) {
+                console.log("Local standalone file mode active.");
+            }
+        });
+
+        function initLanguageSelector() {
+            const select = document.getElementById('langSelect');
+            const languages = { en: "English", fr: "Français", es: "Español", de: "Deutsch", zh: "简体中文" };
+            Object.keys(languages).forEach(key => {
+                let opt = document.createElement('option');
+                opt.value = key;
+                opt.innerText = languages[key];
+                select.appendChild(opt);
+            });
+        }
+
+        function setLanguage(lang) {
+            currentLang = translations[lang] ? lang : 'en';
+            const dict = translations[currentLang];
+            
+            document.getElementById('t-tagline').innerText = dict.tagline;
+            if(!currentUser) document.getElementById('t-connect').innerText = dict.connect;
+            document.getElementById('t-formTitle').innerText = dict.formTitle;
+            document.getElementById('t-walletAddress').innerText = dict.walletAddress;
+            document.getElementById('t-piUsername').innerText = dict.piUsername;
+            document.getElementById('t-email').innerText = dict.email;
+            document.getElementById('t-threatLevel').innerText = dict.threatLevel;
+            document.getElementById('opt-phishing').innerText = dict.optPhishing;
+            document.getElementById('opt-passphrase').innerText = dict.optPassphrase;
+            document.getElementById('opt-p2p').innerText = dict.optP2P;
+            document.getElementById('opt-other').innerText = dict.optOther;
+            document.getElementById('t-amountStolen').innerText = dict.amountStolen;
+            document.getElementById('t-description').innerText = dict.description;
+            document.getElementById('t-proofs').innerText = dict.proofs;
+            document.getElementById('t-dragText').innerText = dict.dragText;
+            document.getElementById('t-dashboardTitle').innerText = dict.dashboardTitle;
+            
+            updateSubmitButtonState();
+            renderRegistry();
+        }
+
+        async function attemptPiAuth() {
+            try {
+                const auth = await Pi.authenticate(['username'], function(p){});
+                currentUser = auth.user.username;
+                
+                document.getElementById('userStatusHeader').innerHTML = `
+                    <div style="background-color: #4d1f67; border: 1px solid #ffb300; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; color: #ffb300;">
+                        🛡️ @${currentUser}
+                    </div>`;
+                
+                document.getElementById('piUsername').value = '@' + currentUser;
+                updateSubmitButtonState();
+            } catch (error) {
+                // FALLBACK FOR LOCAL OFFICE OPENING (Allows testing submit without crash)
+                currentUser = "TestPioneer";
+                document.getElementById('piUsername').value = '@' + currentUser;
+                updateSubmitButtonState();
+            }
+        }
+
+        function updateSubmitButtonState() {
+            const btn = document.getElementById('submitBtn');
+            const txt = document.getElementById('t-submitText');
+            const dict = translations[currentLang];
+
+            if (!currentUser) {
+                btn.disabled = true;
+                btn.className = "submit-locked";
+                txt.innerText = dict.submitDisabled;
+            } else {
+                btn.disabled = false;
+                btn.className = "submit-active";
+                txt.innerText = dict.submitText;
+            }
+        }
+
+        function handleWalletAddressInput(input) {
+            const val = input.value.trim();
+            const regex = /^G[A-Z2-7]{55}$/;
+            input.style.borderColor = regex.test(val) ? "#10b981" : "#ef4444";
+        }
+
+        function handleFiles(files) {
+            const container = document.getElementById('previewContainer');
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImages.push(e.target.result);
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = "40px";
+                    img.style.height = "40px";
+                    img.style.borderRadius = "4px";
+                    container.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const targetAddress = document.getElementById('walletAddress').value.trim();
+            const amount = parseFloat(document.getElementById('amountStolen').value);
+            const desc = document.getElementById('description').value;
+
+            let existing = reports.find(r => r.address === targetAddress);
+            if(existing) {
+                existing.recurrence += 1;
+                existing.totalStolen += amount;
+            } else {
+                reports.unshift({ address: targetAddress, recurrence: 1, totalStolen: amount, upvotes: 0, downvotes: 0 });
+            }
+
+            localStorage.setItem('pi_wallet_reports', JSON.stringify(reports));
+            document.getElementById('reportForm').reset();
+            document.getElementById('previewContainer').innerHTML = '';
+            document.getElementById('piUsername').value = '@' + currentUser;
+            renderRegistry();
+        }
+
+        function handleVote(address, type) {
+            let target = reports.find(r => r.address === address);
+            if(!target) return;
+            if(type === 'up') target.upvotes += 1;
+            if(type === 'down') target.downvotes += 1;
+            localStorage.setItem('pi_wallet_reports', JSON.stringify(reports));
+            renderRegistry();
+        }
+
+        function renderRegistry() {
+            const container = document.getElementById('registryContainer');
+            const dict = translations[currentLang];
+            container.innerHTML = '';
+            document.getElementById('totalReportsBadge').innerText = `${reports.length} Item(s)`;
+
+            reports.forEach(item => {
+                const total = item.upvotes + item.downvotes;
+                const pct = total > 0 ? Math.round((item.upvotes / total) * 100) : 50;
+
+                let card = document.createElement('div');
+                card.className = "scam-card";
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                        <span class="wallet-box">${item.address}</span>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            ${item.recurrence > 1 ? `<span class="badge-recurrence">⚠️ ${dict.reported} ${item.recurrence} ${dict.times}</span>` : ''}
+                            <span class="badge-amount">${item.totalStolen} π</span>
+                        </div>
+                    </div>
+                    <div class="vote-section">
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #6b7280;">
+                                <span>Scam (${item.upvotes})</span>
+                                <span>Safe (${item.downvotes})</span>
+                            </div>
+                            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${pct}%"></div></div>
+                        </div>
+                        <div class="vote-btn-group">
+                            <button onclick="handleVote('${item.address}', 'up')" class="v-btn v-scam">👍 ${dict.scamConfirm}</button>
+                            <button onclick="handleVote('${item.address}', 'down')" class="v-btn v-safe">👎 ${dict.safeReport}</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function loadMockData() {
+            const localData = localStorage.getItem('pi_wallet_reports');
+            if(localData) {
+                reports = JSON.parse(localData);
+            } else {
+                reports = [
+                    { address: "GA5W3XYZ477JKLMN654OPQRS321TUVWX789XYZ1234567890ABCDEFGH", recurrence: 3, totalStolen: 1540, upvotes: 14, downvotes: 1 },
+                    { address: "GD777777777777777777777777777777777777777777777777777777", recurrence: 1, totalStolen: 45, upvotes: 2, downvotes: 8 }
+                ];
+                localStorage.setItem('pi_wallet_reports', JSON.stringify(reports));
+            }
+        }
+    </script>
+</body>
+</html>

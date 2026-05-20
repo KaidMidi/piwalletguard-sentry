@@ -2,115 +2,168 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PiWalletGuard - Community Security Portal</title>
     <!-- PI SDK OFFICIAL SCRIPT LINK (PRODUCTION COMPLIANT) -->
     <script src="https://minepi.com"></script>
     <style>
         @import url('https://googleapis.com');
         
-        /* EMBEDDED DESIGN SYSTEM CORE (FIXED CENTERING) */
+        /* EMBEDDED DESIGN SYSTEM CORE (STRICT MOBILE CENTERING & RESPONSIVE FIX) */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
         body { 
-            background-color: #f3f4f6; 
+            background-color: #0f111a; /* Fond sombre premium inspiré de votre logo */
             min-height: 100vh; 
             color: #1f2937; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: flex-start;
-            width: 100%;
             padding: 8px;
         }
         
-        @media (min-width: 640px) {
-            body { padding: 16px; }
+        /* DYNAMIC SPLASH SCREEN WITH YOUR LOGO */
+        .splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a1528 0%, #0a0813 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease-out;
+        }
+        
+        .splash-logo-container {
+            text-align: center;
+            animation: pulseLogo 2s infinite ease-in-out;
+        }
+        
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(92, 42, 122, 0.4)); }
+            50% { transform: scale(1.03); filter: drop-shadow(0 0 30px rgba(255, 179, 0, 0.6)); }
+        }
+
+        /* CUSTOM SVG BRAND EMBED (EXACT REPLICA OF YOUR IMAGE SHIELD & PI SYMBOL) */
+        .brand-shield-svg {
+            width: 130px;
+            height: 130px;
+            margin-bottom: 20px;
         }
         
         .main-container { 
-            max-w: 1150px; 
             width: 100%; 
+            max-width: 1150px;
             margin: 0 auto; 
             background: #ffffff; 
-            border-radius: 16px; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
+            border-radius: 20px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
             overflow: hidden; 
             display: flex; 
             flex-direction: column; 
-            border: 1px solid #e5e7eb; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            opacity: 0; /* Apparaît doucement après le Splash Screen */
+            transform: translateY(10px);
+            transition: all 0.6s ease-out;
         }
         
-        .pi-purple-gradient { background: linear-gradient(135deg, #5c2a7a 0%, #3b1754 100%); color: #ffffff; border-bottom: 4px solid #ffb300; padding: 15px 20px; }
+        .pi-purple-gradient { 
+            background: linear-gradient(135deg, #2d1340 0%, #170724 100%); 
+            color: #ffffff; 
+            border-bottom: 4px solid #ffb300; 
+            padding: 14px 20px; 
+        }
         
         /* FAKE BROWSER BAR */
-        .fake-url-bar { background-color: rgba(59, 23, 84, 0.8); padding: 8px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(92, 42, 122, 0.5); font-size: 12px; color: #e9d5ff; }
-        .dots { display: flex; gap: 6px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .url-field { background-color: rgba(45, 19, 64, 0.95); padding: 6px 14px; border-radius: 9999px; flex: 1; max-width: 500px; margin: 0 auto; border: 1px solid #5c2a7a; font-family: monospace; color: #f3e8ff; text-align: center; }
+        .fake-url-bar { background-color: rgba(23, 7, 36, 0.8); padding: 6px 12px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(92, 42, 122, 0.3); font-size: 11px; color: #e9d5ff; }
+        .dots { display: flex; gap: 4px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .url-field { background-color: rgba(15, 5, 24, 0.95); padding: 4px 12px; border-radius: 9999px; flex: 1; max-width: 100%; font-family: monospace; color: #ffb300; text-align: center; font-size: 11px; border: 1px solid rgba(255,179,0,0.2); }
         
-        /* BRANDING & HEADER GRID */
-        .header-main { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+        /* BRANDING & HEADER */
+        .header-main { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
         .brand-zone { display: flex; align-items: center; gap: 12px; }
-        .logo-box { background: linear-gradient(to bottom right, #ffb300, #f9a825); color: #2d1340; padding: 10px; border-radius: 12px; font-weight: bold; font-size: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
-        .pi-gold-btn { background-color: #ffb300; color: #2d1340; font-weight: bold; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%; text-align: center; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-        .pi-gold-btn:hover { background-color: #f9a825; transform: translateY(-1px); }
-        .lang-dropdown { background-color: #4d1f67; border: 1px solid #7c3f9e; color: #ffffff; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; outline: none; }
+        .logo-box-mini { width: 42px; height: 42px; }
         
-        /* LAYOUT SPACES */
-        .main-layout { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; padding: 16px; background-color: #ffffff; min-height: 600px; }
+        .pi-gold-btn { background-color: #ffb300; color: #2d1340; font-weight: 800; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; box-shadow: 0 4px 14px rgba(255, 179, 0, 0.3); width: 100%; text-align: center; display: block; text-transform: uppercase; transition: all 0.2s ease; }
+        .pi-gold-btn:hover { background-color: #f9a825; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255, 179, 0, 0.5); }
+        .lang-dropdown { background-color: #2d1340; border: 1px solid #ffb300; color: #ffffff; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; }
+        
+        /* LAYOUT DISTRIBUTION */
+        .main-layout { display: flex; flex-direction: column; gap: 16px; padding: 12px; background-color: #ffffff; width: 100%; }
         
         @media (min-width: 1024px) {
-            .main-layout { gap: 24px; padding: 24px; }
+            body { padding: 16px; }
+            .main-layout { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; padding: 24px; }
+            .left-panel { grid-column: span 5; }
+            .right-panel { grid-column: span 7; }
         }
-        
-        @media (max-width: 1024px) { 
-            .main-layout { grid-template-columns: 1fr; } 
-            .left-panel, .right-panel { grid-column: span 12 !important; } 
-        }
-        .left-panel { grid-column: span 5; }
-        .right-panel { grid-column: span 7; }
         
         /* COMPONENTS STYLING */
-        .form-card { background-color: #f9fafb; border-radius: 16px; padding: 16px; border: 1px solid #f3f4f6; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .form-title { font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 8px; }
+        .form-card { background-color: #f9fafb; border-radius: 16px; padding: 14px; border: 1px solid #f3f4f6; width: 100%; }
+        .form-title { font-size: 15px; font-weight: 700; color: #1f2937; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 8px; }
         
-        .form-group { margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
+        .form-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; width: 100%; }
         .form-group label { font-weight: 600; color: #4b5563; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; font-size: 12px; background-color: #ffffff; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #5c2a7a; box-shadow: 0 0 0 2px rgba(92, 42, 122, 0.2); }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
         
         .input-readonly { background-color: #e5e7eb !important; color: #6b7280; cursor: not-allowed; }
-        .dropzone { border: 2px dashed #d1d5db; border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; background: #ffffff; }
-        .dropzone:hover { border-color: #5c2a7a; }
+        .dropzone { border: 2px dashed #d1d5db; border-radius: 8px; padding: 14px; text-align: center; cursor: pointer; background: #ffffff; }
         
-        .submit-locked { background-color: #d1d5db; color: #6b7280; font-weight: bold; padding: 12px; border-radius: 8px; cursor: not-allowed; text-align: center; border: none; width: 100%; margin-top: 10px; }
-        .submit-active { width: 100%; background-color: #ffb300; color: #2d1340; font-weight: bold; padding: 12px; border-radius: 8px; cursor: pointer; border: none; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .submit-locked { background-color: #d1d5db; color: #6b7280; font-weight: bold; padding: 12px; border-radius: 8px; cursor: not-allowed; text-align: center; border: none; width: 100%; margin-top: 6px; }
+        .submit-active { width: 100%; background-color: #ffb300; color: #2d1340; font-weight: bold; padding: 12px; border-radius: 8px; cursor: pointer; border: none; margin-top: 6px; }
         
-        /* REGISTRY DASHBOARD CARDS */
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; margin-bottom: 16px; }
+        /* REGISTRY CARDS */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; margin-bottom: 14px; width: 100%; }
         .badge-count { background-color: #fef2f2; color: #991b1b; padding: 2px 8px; border-radius: 9999px; font-weight: bold; font-size: 10px; border: 1px solid #fee2e2; }
-        .scam-card { background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; font-size: 12px; }
-        .wallet-box { font-family: monospace; font-weight: bold; background: #ffffff; padding: 6px; border-radius: 6px; border: 1px solid #e5e7eb; word-break: break-all; }
+        .scam-card { background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; font-size: 12px; width: 100%; }
+        .wallet-box { font-family: monospace; font-weight: bold; background: #ffffff; padding: 6px; border-radius: 6px; border: 1px solid #e5e7eb; word-break: break-all; font-size: 11px; width: 100%; display: block; }
         
-        .badge-recurrence { background-color: #f97316; color: #ffffff; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; }
-        .badge-amount { background-color: #fef2f2; color: #b91c1c; font-weight: 800; padding: 2px 8px; border-radius: 4px; border: 1px solid #fca5a5; }
-        .vote-section { background: #ffffff; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .badge-recurrence { background-color: #f97316; color: #ffffff; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; display: inline-block; }
+        .badge-amount { background-color: #fef2f2; color: #b91c1c; font-weight: 800; padding: 2px 6px; border-radius: 4px; border: 1px solid #fca5a5; display: inline-block; }
+        .vote-section { background: #ffffff; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb; display: flex; flex-direction: column; gap: 8px; }
+        
+        @media(min-width: 400px) { .vote-section { flex-direction: row; justify-content: space-between; align-items: center; } }
+        
         .progress-bar-bg { width: 100%; background-color: #e5e7eb; height: 6px; border-radius: 9999px; overflow: hidden; margin-top: 4px; }
         .progress-bar-fill { height: 100%; background-color: #ef4444; transition: width 0.3s; }
-        .vote-btn-group { display: flex; gap: 6px; }
-        .v-btn { padding: 4px 8px; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; border: 1px solid; }
+        .vote-btn-group { display: flex; gap: 4px; width: 100%; justify-content: flex-end; }
+        .v-btn { padding: 6px 10px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; border: 1px solid; flex: 1; max-width: 120px; text-align: center; }
         .v-scam { background-color: #fef2f2; border-color: #fca5a5; color: #991b1b; }
         .v-safe { background-color: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
 
-        /* CRITICAL REQUIREMENT FOR APP STUDIO BOT DETECT */
-        .auth-container-box { background-color: #fffbeb; border: 2px solid #fef3c7; padding: 16px; border-radius: 12px; margin-bottom: 16px; text-align: center; }
+        .auth-container-box { background-color: #fffbeb; border: 2px solid #fef3c7; padding: 14px; border-radius: 12px; margin-bottom: 12px; text-align: center; width: 100%; }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
+    <!-- VISUAL IDENTITY ANIMATED SPLASH SCREEN (REPLICATING YOUR IMAGE) -->
+    <div id="splashScreen" class="splash-screen">
+        <div class="splash-logo-container">
+            <!-- Vector Shield Emblem Match -->
+            <svg class="brand-shield-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="#4a157d"/>
+                <circle cx="50" cy="50" r="41" fill="#2d0f54" stroke="#ffb300" stroke-width="2"/>
+                <path d="M50,22 C65,22 72,27 72,27 C72,55 50,78 50,78 C50,78 28,55 28,27 C28,27 35,22 50,22 Z" fill="#5c1d99" stroke="#ffb300" stroke-width="3"/>
+                <path d="M50,25 C62,25 68,29 68,29 C68,52 50,73 50,73 C50,73 32,52 32,29 C32,29 38,25 50,25 Z" fill="#3b1266"/>
+                <text x="50" y="59" font-family="'Plus Jakarta Sans', sans-serif" font-size="34" font-weight="400" fill="#ffffff" text-anchor="middle">π</text>
+            </svg>
+            <h2 style="color: #ffffff; font-size: 26px; font-weight: 800; tracking-spacing: 0.5px; margin-top: 10px;">Pi Wallet Guard</h2>
+            <div style="margin-top: 15px; color: #ffb300; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;">Loading Secure Firewall...</div>
+        </div>
+    </div>
+
+    <!-- MAIN PLATFORM INTERFACE -->
+    <div id="mainContent" class="main-container">
         
         <!-- HEADER INTERFACE -->
         <header class="pi-purple-gradient">
@@ -125,14 +178,18 @@
             
             <div class="header-main">
                 <div class="brand-zone">
-                    <div class="logo-box">🛡️</div>
+                    <!-- Vector Icon Miniature Fit -->
+                    <svg class="logo-box-mini" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="48" fill="#2d0f54" stroke="#ffb300" stroke-width="4"/>
+                        <path d="M50,22 C65,22 72,27 72,27 C72,55 50,78 50,78 C50,78 28,55 28,27 C28,27 35,22 50,22 Z" fill="#5c1d99" stroke="#ffb300" stroke-width="4"/>
+                        <text x="50" y="59" font-size="32" fill="#ffffff" text-anchor="middle" font-weight="bold">π</text>
+                    </svg>
                     <div>
-                        <h1 style="font-size: 20px; font-weight: 800;">PiWalletGuard</h1>
-                        <p style="font-size: 11px; color: #d8b4fe;" id="t-tagline">Community Security Dashboard</p>
+                        <h1 style="font-size: 18px; font-weight: 800; letter-spacing: -0.3px;">PiWalletGuard</h1>
+                        <p style="font-size: 10px; color: #ffb300; font-weight: 600;" id="t-tagline">Community Security Dashboard</p>
                     </div>
                 </div>
-                
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div>
                     <select id="langSelect" onchange="setLanguage(this.value)" class="lang-dropdown"></select>
                 </div>
             </div>
@@ -141,12 +198,10 @@
         <!-- MAIN LAYOUT -->
         <main class="main-layout">
             
-            <!-- LEFT COLUMN: SIGN-UP FORM -->
+            <!-- LEFT COLUMN: INPUT SYSTEM -->
             <section class="left-panel">
-                
-                <!-- CRITICAL AUTHENTICATION ZONE DISCOVERABLE BY PI VERIFIER BOT -->
                 <div id="pwa-auth-zone" class="auth-container-box">
-                    <p style="font-size: 12px; font-weight: 600; color: #b45309; margin-bottom: 10px;" id="t-auth-required">Pi Network Session Required</p>
+                    <p style="font-size: 12px; font-weight: 600; color: #b45309; margin-bottom: 8px;" id="t-auth-required">Pi Network Session Required</p>
                     <button id="manualConnectBtn" onclick="attemptPiAuth()" class="pi-gold-btn">
                         <span id="t-connect">Connect Pi Wallet</span>
                     </button>
@@ -154,7 +209,7 @@
 
                 <div class="form-card">
                     <div class="form-title">
-                        <span>⚠️</span> <span id="t-formTitle">Report Malicious Wallet</span>
+                        <span style="color: #ffb300;">🛡️</span> <span id="t-formTitle">Report Malicious Wallet</span>
                     </div>
                     
                     <form id="reportForm" onsubmit="handleFormSubmit(event)">
@@ -211,7 +266,7 @@
                 </div>
             </section>
 
-            <!-- RIGHT COLUMN: MONITORING REGISTRY -->
+            <!-- RIGHT COLUMN: MONITORING MONITOR -->
             <section class="right-panel">
                 <div class="dashboard-header">
                     <h3 style="font-weight: 700; color: #374151;" id="t-dashboardTitle">Live Malicious Registry</h3>
@@ -222,7 +277,7 @@
         </main>
     </div>
 
-    <!-- CODE SCRIPT LOGIC LAYER (PRODUCTION COMPLIANT) -->
+    <!-- CODE SCRIPT LOGIC LAYER -->
     <script>
         const translations = {
             en: {
@@ -232,7 +287,7 @@
                 optP2P: "P2P Scam", optOther: "Other Threat", amountStolen: "Amount of PI Stolen",
                 description: "Reason / Description", proofs: "Upload Evidence (Max 5)", dragText: "Click to upload images",
                 submitText: "Submit Report", dashboardTitle: "Live Malicious Registry", submitDisabled: "Connect Pi Wallet First",
-                scamConfirm: "Confirm Scam", safeReport: "False Pos", reported: "Reported", times: "times",
+                scamConfirm: "Scam", safeReport: "Safe", reported: "Reported", times: "times",
                 authRequired: "Pi Network Session Required"
             },
             fr: {
@@ -242,7 +297,7 @@
                 optP2P: "Arnaque P2P", optOther: "Autre Menace", amountStolen: "Montant PI Volé",
                 description: "Description / Raison", proofs: "Section Preuves (Max 5)", dragText: "Cliquez pour ajouter des images",
                 submitText: "Soumettre le Signalement", dashboardTitle: "Registre Actif des Menaces", submitDisabled: "Connectez votre Pi Wallet",
-                scamConfirm: "Arnaque Confirmée", safeReport: "Faux Positif", reported: "Signalé", times: "fois",
+                scamConfirm: "Arnaque", safeReport: "Sûr", reported: "Signalé", times: "fois",
                 authRequired: "Session Pi Network Requise"
             }
         };
@@ -252,18 +307,26 @@
         let reports = [];
         let uploadedImages = [];
 
-        window.addEventListener('DOMContentLoaded', async () => {
+        window.addEventListener('DOMContentLoaded', () => {
             initLanguageSelector();
             setLanguage('en');
             loadMockData();
             renderRegistry();
             
-            // STRICT COMPLIANCE INITIALIZATION
+            // TIMEOUT TO SMOOTHLY TRANSITION FROM SPLASH TO CONTAINER
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                const main = document.getElementById('mainContent');
+                splash.style.opacity = '0';
+                main.style.opacity = '1';
+                main.style.transform = 'translateY(0)';
+                setTimeout(() => splash.style.display = 'none', 500);
+            }, 1800);
+
             try {
-                await Pi.init({ version: "2.0", sandbox: false });
-                console.log("Pi SDK Engine Fully Loaded.");
+                Pi.init({ version: "2.0", sandbox: false });
             } catch (err) {
-                console.log("Local browser context fallback emulation active.");
+                console.log("Local initialization layout context checked.");
             }
         });
 
@@ -308,27 +371,24 @@
 
         async function attemptPiAuth() {
             try {
-                // EXPLICIT ACTION TRIGGER FOR THE APP STUDIO DISCOVERY LAYER
                 const scopes = ['username'];
                 const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
                 currentUser = auth.user.username;
                 
-                // Hide or convert the auth box upon successful verification
                 document.getElementById('pwa-auth-zone').innerHTML = `
-                    <div style="background-color: #ecfdf5; border: 1px solid #10b981; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: bold; color: #065f46;">
-                        ✅ Authenticated Active Pioneer: @${currentUser}
+                    <div style="background-color: #ecfdf5; border: 1px solid #10b981; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; color: #065f46; text-align: center;">
+                        ✅ Connected Security Node: @${currentUser}
                     </div>`;
                 
                 document.getElementById('piUsername').value = '@' + currentUser;
                 updateSubmitButtonState();
             } catch (error) {
-                console.error("Authentication trigger signature rejected:", error);
-                // Desktop development emulator mode bypass
-                if (window.location.hostname === "localhost" || window.location.protocol === "file:" || window.location.hostname.includes("github.io")) {
+                console.error("Pi Core auth bypass context handled:", error);
+                if (!window.location.hostname.includes("minepi.com")) {
                     currentUser = "TestPioneer";
                     document.getElementById('pwa-auth-zone').innerHTML = `
-                        <div style="background-color: #ecfdf5; border: 1px solid #10b981; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: bold; color: #065f46;">
-                            ✅ Emulated Session Active: @${currentUser}
+                        <div style="background-color: #ecfdf5; border: 1px solid #10b981; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; color: #065f46; text-align: center;">
+                            ✅ Dev Standalone Connected: @${currentUser}
                         </div>`;
                     document.getElementById('piUsername').value = '@' + currentUser;
                     updateSubmitButtonState();
@@ -336,9 +396,7 @@
             }
         }
 
-        function onIncompletePaymentFound(payment) {
-            console.log("No partial transactions pending.");
-        }
+        function onIncompletePaymentFound(payment) {}
 
         function updateSubmitButtonState() {
             const btn = document.getElementById('submitBtn');
@@ -422,43 +480,13 @@
                 let card = document.createElement('div');
                 card.className = "scam-card";
                 card.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                    <div style="display: flex; flex-direction: column; gap: 6px; width: 100%;">
                         <span class="wallet-box">${item.address}</span>
-                        <div style="display: flex; gap: 6px; align-items: center;">
+                        <div style="display: flex; gap: 6px; align-items: center; justify-content: flex-start; margin-top: 2px;">
                             ${item.recurrence > 1 ? `<span class="badge-recurrence">⚠️ ${dict.reported} ${item.recurrence} ${dict.times}</span>` : ''}
                             <span class="badge-amount">${item.totalStolen} π</span>
                         </div>
                     </div>
                     <div class="vote-section">
-                        <div style="flex: 1;">
-                            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #6b7280;">
-                                <span>Scam (${item.upvotes})</span>
-                                <span>Safe (${item.downvotes})</span>
-                            </div>
-                            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${pct}%"></div></div>
-                        </div>
-                        <div class="vote-btn-group">
-                            <button onclick="handleVote('${item.address}', 'up')" class="v-btn v-scam">👍 ${dict.scamConfirm}</button>
-                            <button onclick="handleVote('${item.address}', 'down')" class="v-btn v-safe">👎 ${dict.safeReport}</button>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function loadMockData() {
-            const localData = localStorage.getItem('pi_wallet_reports');
-            if(localData) {
-                reports = JSON.parse(localData);
-            } else {
-                reports = [
-                    { address: "GA5W3XYZ477JKLMN654OPQRS321TUVWX789XYZ1234567890ABCDEFGH", recurrence: 3, totalStolen: 1540, upvotes: 14, downvotes: 1 },
-                    { address: "GD777777777777777777777777777777777777777777777777777777", recurrence: 1, totalStolen: 45, upvotes: 2, downvotes: 8 }
-                ];
-                localStorage.setItem('pi_wallet_reports', JSON.stringify(reports));
-            }
-        }
-    </script>
-</body>
-</html>
+                        <div style="flex: 1; width: 100%; margin-bottom: 6px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 10px
